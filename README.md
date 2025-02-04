@@ -24,8 +24,12 @@ Imagine you want to build a house. You first install the necessary tools like a 
 
 ## **Step 2**
 
+      from google.colab import userdata
+      import os
 
-**code**
+      os.environ['GOOGLE_API_KEY'] = userdata.get('GOOGLE_API_KEY')
+
+
 
 **🔹 What does this do?**
 
@@ -45,7 +49,14 @@ Think of an API key like a ticket to a concert. You can’t enter without showin
 
 ## **Step 3**
 
-**code**
+      from langchain_google_genai import ChatGoogleGenerativeAI
+
+      llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash-exp", verbose=True)
+
+      llm.invoke("Who is Shehroz?").content
+
+
+
 
 **🔹 What does this do?**
 
@@ -63,7 +74,10 @@ This is like setting up a voice assistant (like Siri or Google Assistant) and as
 
 ## **Step 4**
 
-**code**
+      from langchain.tools import Tool
+      from langchain_core.tools import tool
+
+
 
 **🔹 What does this do?**
 
@@ -77,7 +91,13 @@ Think of this as importing different kitchen tools like a knife, spoon, and blen
 
 ## **Step 5**
 
-**code**
+      @tool
+      def add(a: int, b: int) -> int:
+          """Add two integers."""
+          print("Tool Message:  Addition Tool is Called!")
+          print("="*40)
+          return a + b
+
 
 
 
@@ -108,7 +128,18 @@ There are also tools for introducing Shehroz, providing social accounts, and say
 
 ## **Step 6**
 
-**code**
+
+      tools = [
+          add,
+          subtract,
+          multiply,
+          divide,
+          intro,
+          creator,
+          goodbye,
+          give_social_accounts
+      ]
+
 
 
 🔹 **What does this do?**
@@ -125,7 +156,19 @@ Think of this like a toolbox where you store all your tools (hammer, screwdriver
 
 ## **Step 7**
 
-**code**
+
+      from langchain.agents import initialize_agent, AgentType
+
+      # Initialize the agent
+      agent = initialize_agent(
+          tools,                        # Provide the tools
+          llm,                          # LLM for fallback
+          agent=AgentType.STRUCTURED_CHAT_ZERO_SHOT_REACT_DESCRIPTION,
+          max_iterations=50,
+          # verbose=True                 # Enable debugging output
+      )
+
+
 
 🔹 **What does this do?**
 
@@ -141,6 +184,25 @@ This is like hiring a virtual assistant that can answer questions, do calculatio
 
 
 ## **Step 8**
+
+      print("Welcome To Shehroz Hanif Coding World")
+      print("=" * 40)
+      print("I am a Calculator Agent, and I also have information about my Creator....")
+
+      while True:
+          user_query = input("Ask your query (type 'exit' or 'goodbye' to end): ").strip().lower()
+          print(f"Human Message: {user_query}")
+          print("=" * 40)
+          if user_query in ["exit", "i have to go", "goodbye", "please stop", "end"]:
+              print("Agent Response: Goodbye! Thanks for your visit. Come again...")
+              print("=" * 40)
+              break
+          try:
+              response = agent.invoke({"input": user_query})  
+              print(f"Agent Response: {response.get('output', 'No output available')}")
+              print("=" * 40)
+          except Exception as e:
+              print(f"An error occurred: {e}")
 
 
 
